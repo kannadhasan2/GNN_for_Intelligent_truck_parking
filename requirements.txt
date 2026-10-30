@@ -1,0 +1,5 @@
+torch>=2.2
+numpy
+pandas
+streamlit>=1.33
+plotly

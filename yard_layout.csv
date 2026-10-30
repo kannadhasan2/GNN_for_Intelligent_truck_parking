@@ -1,0 +1,25 @@
+bay_id,zone_id,zone_name,bay_length_m,dist_to_gate_m
+0,0,Z0 Standard-S,14.0,73
+1,0,Z0 Standard-S,14.0,55
+2,0,Z0 Standard-S,14.0,85
+3,0,Z0 Standard-S,14.0,61
+4,0,Z0 Standard-S,14.0,79
+5,0,Z0 Standard-S,14.0,67
+6,1,Z1 Standard-L,18.0,38
+7,1,Z1 Standard-L,18.0,20
+8,1,Z1 Standard-L,18.0,50
+9,1,Z1 Standard-L,18.0,26
+10,1,Z1 Standard-L,18.0,44
+11,1,Z1 Standard-L,18.0,32
+12,2,Z2 Reefer,18.0,108
+13,2,Z2 Reefer,18.0,90
+14,2,Z2 Reefer,18.0,120
+15,2,Z2 Reefer,18.0,96
+16,2,Z2 Reefer,18.0,114
+17,2,Z2 Reefer,18.0,102
+18,3,Z3 Hazmat,18.0,143
+19,3,Z3 Hazmat,18.0,125
+20,3,Z3 Hazmat,18.0,155
+21,3,Z3 Hazmat,18.0,131
+22,3,Z3 Hazmat,18.0,149
+23,3,Z3 Hazmat,18.0,137
