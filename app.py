@@ -1,7 +1,4 @@
-"""
-app.py - dashboard:  streamlit run app.py
-Tabs: Overview | Forecast comparison | Allocation comparison | Live yard & dispatch | Training
-"""
+
 import json, os, subprocess, sys
 import numpy as np
 import pandas as pd
@@ -54,7 +51,6 @@ def load_data(days, seed):
     return make_dataset(days, seed)
 
 
-# ------------------------------------------------------------------ sidebar
 with st.sidebar:
     st.header("⚙️ Experiment")
     quick = st.toggle("Quick run (smoke test)", value=True)
@@ -82,7 +78,6 @@ OURS, OURS_A = "Ours (full)", "Ours (forecast-informed RL)"
 t_overview, t_fc, t_al, t_live, t_train = st.tabs(
     ["📊 Overview", "📈 Forecast comparison", "🚚 Allocation comparison", "🗺️ Live yard & dispatch", "🧠 Training"])
 
-# ------------------------------------------------------------------ overview
 with t_overview:
     base_f = F.drop(index=[OURS], errors="ignore")["MAE_avg"]
     base_a = A.drop(index=[OURS_A], errors="ignore")
@@ -131,7 +126,6 @@ with t_overview:
 """)
         st.caption("Numbers shown come from *your* run of the pipeline; they are experimental outputs, not paper claims.")
 
-# ------------------------------------------------------------------ forecast comparison
 with t_fc:
     st.subheader("Forecast accuracy on the chronological test split")
     hz = R["meta"]["horizons_min"]
@@ -154,7 +148,6 @@ with t_fc:
             "zone occupancy is continuous and shows quantile calibration. Coverage80 should be ≈ 0.80 for a calibrated "
             "q10–q90 interval. Persistence is a strong short-horizon baseline, so the gap should widen at 60 min.")
 
-# ------------------------------------------------------------------ allocation comparison
 with t_al:
     st.subheader("Operational KPIs on held-out simulated days")
     cols = ["mean_wait", "p95_wait", "prio_wait", "overflow_pct", "mean_dist", "util_pct", "violations", "latency_ms"]
@@ -174,7 +167,6 @@ with t_al:
     st.info("Hard constraints (length, cargo class, free bay) are enforced by the feasibility mask, so violations are 0 for every policy. "
             "The forecast-informed policy differs from *RL without forecast* only by the q90 zone-occupancy features and τ.")
 
-# ------------------------------------------------------------------ live yard
 with t_live:
     if not os.path.exists(f"{RES}/ours.pt"):
         st.warning("Model checkpoint not found."); st.stop()
@@ -222,7 +214,6 @@ with t_live:
                                    title="Policy cost of each feasible bay (lowest wins)").update_layout(height=300),
                             use_container_width=True)
 
-# ------------------------------------------------------------------ training
 with t_train:
     c1, c2 = st.columns(2)
     cv = pd.DataFrame([dict(model=m, epoch=e["epoch"], val_loss=e["val"]) for m, cs in R["curves"].items() for e in cs])

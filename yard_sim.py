@@ -1,10 +1,4 @@
-"""
-yard_sim.py - discrete-event logistics-yard simulator + truck->bay allocation policies.
-NumPy only. Implements the data plan (Sec. 5.3) and the constraint-aware policy (Sec. 4.5).
 
-Yard layout: 4 zones x 6 bays + 4 zone nodes + 1 gate node  (hierarchical graph, Sec. 4.2)
-  Z0 standard short (14 m) | Z1 standard long (18 m) | Z2 reefer (18 m) | Z3 hazmat (18 m)
-"""
 import math
 import time
 import numpy as np
@@ -38,7 +32,6 @@ def new_truck(rng, t):
 
 
 def feasible(tr, occ):
-    """Feasibility mask M_ki: bay free, long enough, permitted for the cargo class."""
     ok = (~occ) & (BAY_LEN >= tr["len"])
     if tr["cargo"] == 1:
         ok &= BAY_ZONE == 2
@@ -47,7 +40,6 @@ def feasible(tr, occ):
     return ok
 
 
-# ------------------------------------------------------------------ policies
 class FCFS:
     name, uses_fc = "FCFS (first free bay)", False
     def choose(self, tr, feas, occ, fq, off): return int(np.flatnonzero(feas)[0])
@@ -65,8 +57,7 @@ class BestFit:
 
 
 class Scored:
-    """Learned linear scoring policy  pi(i|k) ~ mask * exp(-w.f)  (Eq. 6-7), greedy argmax.
-    use_fc=True adds forecast features and the risk threshold tau (Sec. 4.5)."""
+
     def __init__(self, w, use_fc, tau=0.75, name=""):
         self.w, self.uses_fc, self.tau, self.name = np.asarray(w, float), use_fc, tau, name
 
@@ -96,7 +87,6 @@ class Scored:
         return idx, f @ self.w
 
 
-# ------------------------------------------------------------------ environment
 class YardEnv:
     def __init__(self, seed, start_slot=0, n_slots=SPD, scale=1.3):
         self.seed, self.s0, self.S, self.scale = seed, start_slot, n_slots, scale
@@ -149,14 +139,12 @@ class YardEnv:
 
 
 def eval_policy(pol, fc, seeds):
-    """Average operational KPIs over common-random-number episodes."""
     ms = [YardEnv(s, start_slot=(k % 7) * SPD).run(pol, fc)[1] for k, s in enumerate(seeds)]
     return {k: float(np.mean([m[k] for m in ms])) for k in ms[0]}
 
 
 def cem_train(use_fc, fc, iters=5, pop=10, eps=2, seed=0, log=print):
-    """Gradient-free policy search (cross-entropy method) on the Eq. 8 style cost:
-    waiting time + search distance + overflow. Returns (weights, cost curve)."""
+
     rng = np.random.default_rng(seed)
     mask = np.ones(6) if use_fc else np.array([1, 1, 1, 1, 0, 0.])
     mu, sd, curve, best = np.array([1, 1, 1, 0, 0, 0.]), np.ones(6) * 0.8, [], (1e9, None)
